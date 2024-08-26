@@ -280,9 +280,9 @@ const randomPiece = () => {
     const randomPiece = pieces[rnd];
     return randomPiece;
 }
-
-const emtpyPiece = () => {
+const emptyPiece = () => {
     return empty_Piece();
 }
 
-export {randomPiece, emtpyPiece};
+export {randomPiece, emptyPiece};
+

@@ -1,20 +1,28 @@
 import { render, screen } from '@testing-library/react';
-import Game from './Game'; // Ensure this matches the export from Game.js
+import Game from './Game';
 
-test('renders learn react link', () => {
-  // Mock the necessary props
-  const tetrisMock = {
+const tetrisMock = {
     state: {
-      // Assuming state has properties you might check
-    }
-  };
+        isStarted: () => true,  // Game has started
+        isRunning: () => false, // Game is paused
+        visibleMatrix: () => [[null, null], [null, null]],
+        nextPiece: () => ({ shape: [[1]], color: 'red' }),
+        isGameOver: () => false,
+        score: () => 100,
+        level: () => 2
+    },
+    onStateChange: jest.fn(),
+    offStateChange: jest.fn(),
+    start: jest.fn(),
+    pause: jest.fn(),
+    resume: jest.fn()
+};
 
-  // Render the Game component with the mock props
-  render(<Game tetris={tetrisMock} />);
-
-  // Ensure the text matches something actually rendered by the component
-  const linkElement = screen.getByText(/learn react/i); // Update this line if "learn react" isn't in your component's output
-
-  expect(linkElement).toBeInTheDocument();
+test('renders game controls correctly', () => {
+    render(<Game tetris={tetrisMock} />);
+    const resumeButton = screen.getByText('Resume');
+    expect(resumeButton).toBeInTheDocument();
+    const scoreDisplay = screen.getByText('100'); // Adjusted to look for just '100'
+    expect(scoreDisplay).toBeInTheDocument();
 });
 

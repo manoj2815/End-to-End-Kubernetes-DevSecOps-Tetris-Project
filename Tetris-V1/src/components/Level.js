@@ -1,4 +1,5 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
+
 export const Level = (props) => {
     const [level, setLevel] = useState(props.level);
 
@@ -8,10 +9,11 @@ export const Level = (props) => {
 
     return (
         <div>
-            <span class="title">Level</span>
-            <p class="gameText">{level}</p>
+            <span className="title">Level</span>
+            <p className="gameText">{level}</p>
         </div>
-    )
+    );
 }
 
 export default Level;
+

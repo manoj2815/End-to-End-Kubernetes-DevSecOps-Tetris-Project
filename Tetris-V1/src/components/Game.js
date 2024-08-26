@@ -1,89 +1,70 @@
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import Next from "./Next.js";
 import Score from "./Score.js";
 import Level from "./Level.js";
-import {createMatrix} from "../helpers/Helpers";
-import React, {useState, useEffect} from 'react';
+import { createMatrix } from "../helpers/Helpers";
 import styles from "./Game.module.css";
-import {emtpyPiece} from "../tetris/Piece";
+import { emptyPiece } from "../tetris/Piece";
 
-export const Game = (props) => {
-    const tetris = props.tetris;
-    const [state, setState] = useState(props.tetris.state);
-
-    const onStateChange = (_state) => {
-        setState(_state);
-    };
+export const Game = ({ tetris }) => {
+    const [state, setState] = useState(tetris.state || {});
 
     useEffect(() => {
-        tetris.onStateChange(onStateChange);
-        document.title ="React Tetris";
+        const handleStateChange = (_state) => {
+            console.log("State updated:", _state); // Debugging line
+            setState(_state);
+        };
+        tetris.onStateChange(handleStateChange);
+        return () => tetris.offStateChange(handleStateChange);
     }, [tetris]);
 
+    const isStarted = state.isStarted && state.isStarted();
+    const isRunning = state.isRunning && state.isRunning();
+    console.log("isStarted:", isStarted, "isRunning:", isRunning); // Debugging line
 
-    let resumePauseButton;
-    if (state.isStarted()) {
-        if (state.isRunning()) {
-            resumePauseButton =
-                <button onClick={tetris.pause} className={`${styles.btn} ${styles.btnPause}`}>Pause</button>
-        } else {
-            resumePauseButton =
-                <button onClick={tetris.resume} className={`${styles.btn} ${styles.btnNew}`}>Resume</button>
-        }
-    }
-
-
-    const matrix = createMatrix(state.visibleMatrix(), styles);
-
-    const nextPiece = state.nextPiece();
-    const visibleNextPiece = nextPiece ? nextPiece : emtpyPiece();
-
-    const gameOver = state.isGameOver() ?
-        <div className={styles.gameOver}>
-            <p>Game Over</p>
-        </div>
-        :
-        '';
+    const visibleMatrix = state.visibleMatrix ? createMatrix(state.visibleMatrix(), styles) : null;
+    const nextPiece = state.nextPiece ? state.nextPiece() : emptyPiece();
+    const score = state.score ? state.score() : 0;
+    const level = state.level ? state.level() : 0;
 
     return (
         <div className={styles.content}>
-            <div className={styles.header}><span>React Tetris</span></div>
-
+            <div className={styles.header}>React Tetris</div>
             <div className={styles.matrix}>
-                {matrix}
-                {gameOver}
+                {visibleMatrix}
+                {state.isGameOver && state.isGameOver() && <div className={styles.gameOver}><p>Game Over</p></div>}
             </div>
             <div className={styles.controls}>
-                <div className={styles.controlsNext}>
-                    <Next next={visibleNextPiece}/>
-                </div>
-                <div className={styles.controlsScore}>
-                    <Score score={state.score()}/>
-                </div>
-                <div className={styles.controlsLevel}>
-                    <Level level={state.level()}></Level>
-                </div>
+                <Next next={nextPiece} />
+                <Score score={score} />
+                <Level level={level} />
                 <div className={styles.controlsButtons}>
-                    <div className={styles.row}>
-                        <button onClick={tetris.start} className={`${styles.btn} ${styles.btnNew}`}>New Game</button>
-                    </div>
-                    <div className={styles.row}>
-                        {resumePauseButton}
-                    </div>
-                </div>
-                <div className={styles.controlsInfo}>
-                    <p class="infoText">
-                        Start/Pause/Resume: Space <br/>
-                        Rotate: Arrow Up <br/>
-                        Left: Arrow Left <br/>
-                        Right: Arrow Right <br/>
-                        Soft Drop: Arrow Down <br/>
-                    </p>
+                    <button onClick={tetris.start} className={`${styles.btn} ${styles.btnNew}`}>New Game</button>
+                    {isStarted && (
+                        <button
+                            onClick={isRunning ? tetris.pause : tetris.resume}
+                            className={`${styles.btn} ${isRunning ? styles.btnPause : styles.btnNew}`}
+                        >
+                            {isRunning ? 'Pause' : 'Resume'}
+                        </button>
+                    )}
                 </div>
             </div>
         </div>
     );
+};
 
-}
+Game.propTypes = {
+    tetris: PropTypes.shape({
+        state: PropTypes.object,
+        onStateChange: PropTypes.func.isRequired,
+        offStateChange: PropTypes.func,
+        start: PropTypes.func.isRequired,
+        pause: PropTypes.func,
+        resume: PropTypes.func
+    }).isRequired
+};
 
 export default Game;
 

@@ -1,27 +1,31 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import styles from "./Next.module.css";
-import {createMatrix} from "../helpers/Helpers";
+import { createMatrix } from "../helpers/Helpers";
 
 export const Next = (props) => {
-    const [next, setNext] = useState(props.next);
+    // Initialize 'next' with a safe fallback if 'props.next' is not available
+    const [next, setNext] = useState(props.next || { tetrominos: () => [] });
 
     useEffect(() => {
-        setNext(props.next);
-    }, [props.next])
+        // Update 'next' safely with fallback if 'props.next' is undefined
+        setNext(props.next || { tetrominos: () => [] });
+    }, [props.next]);
 
-    const tetrominos = next?.tetrominos();
-    const matrix = tetrominos ? createMatrix(tetrominos) : "";
+    // Safely access 'tetrominos' function, falling back to an empty array if not available
+    const tetrominos = next?.tetrominos ? next.tetrominos() : [];
+    // Create matrix only if 'tetrominos' has elements
+    const matrix = tetrominos.length > 0 ? createMatrix(tetrominos) : null;
 
     return (
         <div>
-            <div class="title">
+            <div className={styles.title}>
                 <span>Next</span>
             </div>
-           <div className={styles.matrix}>
-               {matrix}
-           </div>
+            <div className={styles.matrix}>
+                {matrix}
+            </div>
         </div>
-    )
+    );
 }
 
 export default Next;
