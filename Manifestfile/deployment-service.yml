@@ -15,14 +15,14 @@ spec:
     spec:
       containers:
       - name: tetris
-        image: manojsiriparthi/tetrisv1:6
+        image: manojsiriparthi/tetrisv2:7
         ports:
         - containerPort: 3000
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: tetris-service
+  name: tetris-green
 spec:
   selector:
     app: tetris
