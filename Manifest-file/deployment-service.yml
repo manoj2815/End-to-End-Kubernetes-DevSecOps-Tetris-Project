@@ -14,7 +14,7 @@ spec:
         app: tetris-blue
     spec:
       containers:
-      - name: tetris-blue
+      - name: tetris
         image: manojsiriparthi/tetrisv1:6
         ports:
         - containerPort: 3000
