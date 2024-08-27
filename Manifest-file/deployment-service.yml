@@ -1,20 +1,20 @@
----
+----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tetris
+  name: tetris-blue
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: tetris
+      app: tetris-blue
   template:
     metadata:
       labels:
-        app: tetris
+        app: tetris-blue
     spec:
       containers:
-      - name: tetris
+      - name: tetris-blue
         image: manojsiriparthi/tetrisv1:6
         ports:
         - containerPort: 3000
@@ -25,7 +25,7 @@ metadata:
   name: tetris-blue
 spec:
   selector:
-    app: tetris
+    app: tetris-blue
   ports:
   - protocol: TCP
     port: 80                
